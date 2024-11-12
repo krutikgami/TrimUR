@@ -6,23 +6,24 @@ import Navbar from './components/navbar'
 import ShortUrl from './components/ShortUrl'
 import Signup from './components/Signup'
 import ProtectedRoute from './context/Protectedroute.jsx'
+import RedirectUrl from './components/RedirectUrl.jsx'
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 
 
 function App() {
+
   return (
 
     <BrowserRouter>
-      <Navbar />
-      
+     
       <Routes>
-        <Route path='/' element={<HomePage />} />
-        <Route path='/about' element={<About />} />
-        <Route path='/shorturl' element={<ProtectedRoute><ShortUrl /></ProtectedRoute>} />
-        <Route path='/login' element={<Login />} />
-        <Route path='/signup' element={<Signup />} />
+        <Route path='/' element={<><Navbar /><HomePage /> <Footer /></>} />
+        <Route path='/about' element={<><Navbar /><About /> <Footer /></>} />
+        <Route path='/shorturl' element={<ProtectedRoute><><Navbar /><ShortUrl /> <Footer /></></ProtectedRoute>} />
+        <Route path='/login' element={<><Navbar /><Login /> <Footer /></>} />
+        <Route path='/signup' element={<><Navbar /><Signup /> <Footer /></>} />
+        <Route path="/:shortUrl" element={<RedirectUrl />} />
       </Routes>
-      <Footer />
     </BrowserRouter>
  
 

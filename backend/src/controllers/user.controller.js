@@ -3,6 +3,7 @@ import {ApiError} from '../utils/ApiError.js'
 import {ApiResponse} from '../utils/ApiResponse.js'
 import {User} from '../models/user.model.js'
 import {Url} from '../models/url.model.js'
+import mongoose from 'mongoose'
 
 const registerUser = AsyncHandler(async (req, res) => {
     const {username,email,password,confirmPassword} = req.body;
@@ -81,11 +82,53 @@ const urlShortner = AsyncHandler(async(req,res)=>{
     if(!user || !url || !shortUrl){
         throw new ApiError(400,"All fields are required");
     }
-
-     
+    const userObjectId = new mongoose.Types.ObjectId(user);
+     const existedurl = await Url.findOne({
+        shortUrl
+     })
     
+     if(existedurl){
+        throw new ApiError(400,"URL already exists");
+     }
+
+     const urlData = await Url.create({
+        user : userObjectId,
+        url,
+        shortUrl
+     })
+
+     const createdUrl = await Url.findById(urlData._id);
+
+        if(!createdUrl){
+            return res.status(400).json(
+                new ApiResponse(400,"URL not found",null)
+            );
+        }
+
+        return res.status(200).json(
+            new ApiResponse(200,"URL created successfully",createdUrl)
+        );
+});
+
+ const getUrlByShortCode = AsyncHandler(async (req, res) => {
+    try {
+      const { shortUrl } = req.params;
+      console.log("shortUrl : ",shortUrl);
+      
+      const urlData = await Url.findOne({ shortUrl });
+      
+      if (!urlData) {
+        throw new ApiError(404, 'URL not found');
+      }
+
+     console.log("urlData : ",urlData);
+     
+      return res.status(200).json(new ApiResponse(200, 'URL found', urlData));
+    } catch (error) {
+      return res.status(500).json(new ApiResponse(500, error.message,null));
+    }
 });
 
 
 
-export {registerUser,loginUser,urlShortner};
+export {registerUser,loginUser,urlShortner,getUrlByShortCode};
