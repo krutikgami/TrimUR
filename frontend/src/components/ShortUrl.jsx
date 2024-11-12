@@ -30,10 +30,9 @@ function ShortUrl() {
       });
 
       const data = await res.json();
-
+    
       if (res.ok) {
-        setGeneratedLink(`http://localhost:5173/${formdata.shortUrl}`);
-        // navigate('/');
+        setGeneratedLink(`${import.meta.env.VITE_URL}/${formdata.shortUrl}`);
       } else {
         setErrormessage(data.message || 'Failed to generate short URL');
       }
