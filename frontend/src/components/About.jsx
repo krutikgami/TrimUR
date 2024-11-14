@@ -2,7 +2,7 @@ import React from 'react';
 import ProfileImg from "../assets/Profile_Url.jpg"
 function About() {
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-br from-blue-50 via-blue-100 to-yellow-50 items-center justify-center text-black px-6">
+    <div className="flex flex-col min-h-screen mt-16 bg-gradient-to-br from-blue-50 via-blue-100 to-yellow-50 items-center justify-center text-black px-6">
 
       <div className="flex flex-col md:flex-row items-center space-y-6 md:space-y-0 md:space-x-6">
 

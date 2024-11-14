@@ -7,6 +7,7 @@ import ShortUrl from './components/ShortUrl'
 import Signup from './components/Signup'
 import ProtectedRoute from './context/Protectedroute.jsx'
 import RedirectUrl from './components/RedirectUrl.jsx'
+import TrackUrl from './components/TrackUrl.jsx'
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 
 
@@ -20,6 +21,7 @@ function App() {
         <Route path='/' element={<><Navbar /><HomePage /> <Footer /></>} />
         <Route path='/about' element={<><Navbar /><About /> <Footer /></>} />
         <Route path='/shorturl' element={<ProtectedRoute><><Navbar /><ShortUrl /> <Footer /></></ProtectedRoute>} />
+        <Route path='/trackUrl' element={<ProtectedRoute><><Navbar /><TrackUrl /> <Footer /></></ProtectedRoute>} />
         <Route path='/login' element={<><Navbar /><Login /> <Footer /></>} />
         <Route path='/signup' element={<><Navbar /><Signup /> <Footer /></>} />
         <Route path="/:shortUrl" element={<RedirectUrl />} />
