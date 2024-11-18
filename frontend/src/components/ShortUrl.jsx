@@ -54,7 +54,8 @@ function ShortUrl() {
     }else{
     
   
-    const prompt = `Suggest 20 unique and funny short names for the URL: ${baseUrl}`;
+      const prompt = `Suggest 20 unique, funny, and short one-word names for the URL: ${baseUrl}. Only provide plain text names without using any symbols, punctuation, or special characters.`;
+
     
     const requestBody = {
       contents: [
