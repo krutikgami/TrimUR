@@ -1,7 +1,8 @@
 import { app } from "./app.js";
 import connectDB from "./db/db.js";
+import cors from "cors"
 
-try{
+app.use(cors());
 connectDB()
 .then(()=>{
     app.listen(process.env.PORT || 8000,()=>{
@@ -11,7 +12,3 @@ connectDB()
 .catch((err)=>{
     console.log("MongoDB error : ", err); 
 });
-
-} catch(err){
-    console.log(err.message);
-};
