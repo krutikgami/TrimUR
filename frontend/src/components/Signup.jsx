@@ -19,7 +19,7 @@ function Signup() {
       setLoad(true);
       setErrormessage(null);
 
-      const res = await fetch('/Api/v1/users/register', {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formdata),

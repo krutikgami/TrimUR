@@ -7,7 +7,6 @@ export default defineConfig({
   server:{
     proxy: {
       '/Api': {
-       target: process.env.VITE_BACKEND_URL,
        secure: false,
      },
     },

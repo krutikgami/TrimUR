@@ -8,7 +8,7 @@ function RedirectUrl() {
   useEffect(() => {
     const fetchOriginalUrl = async () => {
       try {
-        const res = await fetch(`/Api/v1/users/${shortUrl}`);
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/${shortUrl}`);
         const data = await res.json();
         console.log(data);
 

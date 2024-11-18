@@ -9,7 +9,7 @@ function TrackUrl() {
     useEffect(() => {
         const fetchUrls = async () => {
             try {
-                const res = await fetch('/Api/v1/users/fetchUrls', {
+                const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/fetchUrls`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ userId: currentUser?.data?._id })

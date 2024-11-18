@@ -26,7 +26,7 @@ function ShortUrl() {
     const requestData = { ...formdata, user: currentUser?.data?._id };
 
     try {
-      const res = await fetch('/Api/v1/users/shortUrl', {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/shortUrl`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(requestData),

@@ -24,7 +24,7 @@ const handleSubmit = async (e) =>{
 
 
   try {
-    const res = await fetch('/Api/v1/users/login',{
+    const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/login`,{
       method : 'POST',
       headers : { 'Content-Type': 'application/json'},
       body : JSON.stringify(formdata)
