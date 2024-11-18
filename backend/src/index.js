@@ -1,8 +1,7 @@
 import { app } from "./app.js";
 import connectDB from "./db/db.js";
-import cors from "cors"
 
-app.use(cors());
+
 connectDB()
 .then(()=>{
     app.listen(process.env.PORT || 8000,()=>{
