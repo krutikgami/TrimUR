@@ -2,7 +2,7 @@ import express from 'express'
 import dotenv from 'dotenv'
 import cors from "cors"
 import cookieParser from 'cookie-parser'
-import userRouter from './routes/user.route.js'
+import userRouter from './backend/routes/user.route.js'
 import bodyParser from 'body-parser'
 
 const app = express();
