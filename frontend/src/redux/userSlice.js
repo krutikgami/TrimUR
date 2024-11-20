@@ -28,8 +28,18 @@ const userSlice  =  createSlice({
             state.error = null;
             state.loading = false;
           },
+          startLoading(state) {
+            state.loading = true;
+          },
+          stopLoading(state) {
+            state.loading = false;
+          },
+          resetLoading: (state) => {
+            state.loading = false; 
+          },
+
     }
 });
 
-export const { loginStart, signInSuccess, signInFailure, logout } = userSlice.actions;
+export const { loginStart, signInSuccess, signInFailure, logout,resetLoading,startLoading,stopLoading } = userSlice.actions;
 export default userSlice.reducer;

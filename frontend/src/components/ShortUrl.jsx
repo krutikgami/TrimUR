@@ -1,15 +1,24 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
-
+import React, { useState,useEffect } from 'react';
+import { useSelector,useDispatch } from 'react-redux';
+import { FaSpinner } from "react-icons/fa"; 
+import { startLoading,stopLoading,resetLoading } from '../redux/userSlice.js';
 
 function ShortUrl() {
+
+  const dispatch = useDispatch()
   const [formdata, setFormdata] = useState({ url: '', shortUrl: '' });
   const [generatedLink, setGeneratedLink] = useState('');
   const [errormessage, setErrormessage] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isanalayzing,setanalayzing] = useState(false);
   const { currentUser } = useSelector((state) => state.user);
+  const { loading, error: errorMessage } = useSelector((state) => state.user);
 
+  useEffect(()=>{
+    dispatch(resetLoading())
+    // setanalayzing(false);
+  },[dispatch])
 
 
   const handleChange = (e) => {
@@ -18,6 +27,8 @@ function ShortUrl() {
 
   const handleGenerate = async (e) => {
     e.preventDefault();
+
+    dispatch(startLoading())
 
     if (!formdata.url || !formdata.shortUrl) {
       return setErrormessage("All fields are required");
@@ -42,83 +53,85 @@ function ShortUrl() {
     } catch (error) {
       setErrormessage(error.message);
     }
+    dispatch(stopLoading())
   };
 
   const handleAnalyze = async () => {
-    const baseUrl = formdata.url.replace(/^https?:\/\//, "").replace(/\.(com|in|org|net|edu|gov|tv|io)(\/|$)/, "");
-    if (!baseUrl){
+    setanalayzing(true)
+    const baseUrl = formdata.url
+      .replace(/^https?:\/\//, "")
+      .replace(/\.(com|in|org|net|edu|gov|tv|io)(\/|$)/, "");
+    if (!baseUrl) {
       setErrormessage("Url Field is required");
       setTimeout(() => {
         setErrormessage("");
       }, 2000);
-    }else{
-    
-  
+    } else {
       const prompt = `Suggest 20 unique, funny, and short one-word names for the URL: ${baseUrl}. Only provide plain text names without using any symbols, punctuation, or special characters.`;
 
-    
-    const requestBody = {
-      contents: [
-        {
-          parts: [
-            {
-              text: prompt
-            }
-          ]
-        }
-      ]
-    };
-  
-    const apiKey = import.meta.env.VITE_API_KEY; 
-    
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${apiKey}`;
-  
-    try {
-     
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(requestBody)
-      });
-  
+      const requestBody = {
+        contents: [
+          {
+            parts: [
+              {
+                text: prompt,
+              },
+            ],
+          },
+        ],
+      };
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch suggestions from API');
-      }
-  
-      const result = await response.json();
-  
-      if (result?.candidates && result.candidates[0]?.content?.parts[0]?.text) {
-        const dataText = result.candidates[0].content.parts[0].text;
+      const apiKey = import.meta.env.VITE_API_KEY;
 
-        const data = dataText.split("\n")
-          .map((item) => item.replace(/^\d+\.\s/, '') 
-          .replace(/\.(com|in|org|net|edu|gov)(\/|$)/, "")
-            .replace(/[()]/g, '')
-            .trim()) 
-          .filter(Boolean);
-  
-    
-        setSuggestions(data);
-        console.log("Suggestions:", data);
-  
-        if (data.length > 0) {
-          setFormdata((prev) => ({ ...prev, shortUrl: data[0] }));
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${apiKey}`;
+
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestBody),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch suggestions from API');
         }
-      } else {
-        throw new Error("Unexpected response structure");
+
+        const result = await response.json();
+
+        if (result?.candidates && result.candidates[0]?.content?.parts[0]?.text) {
+          const dataText = result.candidates[0].content.parts[0].text;
+
+          const data = dataText
+            .split("\n")
+            .map((item) =>
+              item
+                .replace(/^\d+\.\s/, '')
+                .replace(/\.(com|in|org|net|edu|gov)(\/|$)/, "")
+                .replace(/[()]/g, '')
+                .trim()
+            )
+            .filter(Boolean);
+
+          setSuggestions(data);
+          console.log("Suggestions:", data);
+
+          if (data.length > 0) {
+            setFormdata((prev) => ({ ...prev, shortUrl: data[0] }));
+          }
+        } else {
+          throw new Error("Unexpected response structure");
+        }
+      } catch (error) {
+        setErrormessage(error.message || "Failed to analyze suggestions");
+        setTimeout(() => {
+          setErrormessage("");
+        }, 2000);
       }
-    } catch (error) {
-      setErrormessage(error.message || "Failed to analyze suggestions");
-      setTimeout(() => {
-        setErrormessage("");
-      }, 2000);
     }
-  }
+   setanalayzing(false);
   };
-  
 
   const handleNext = () => {
     if (suggestions.length > 0) {
@@ -137,30 +150,35 @@ function ShortUrl() {
   };
 
   return (
-  
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-blue-50 via-blue-100 to-yellow-50 px-4">
-      <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
-        <h2 className="text-2xl font-semibold text-center text-gray-800 mb-6">URL Shortener</h2>
+      <div className="w-full max-w-sm md:max-w-md lg:max-w-lg bg-white rounded-lg shadow-lg p-6 md:p-8 lg:p-10">
+        <h2 className="text-xl md:text-2xl lg:text-3xl font-semibold text-center text-gray-800 mb-4 md:mb-6">
+          URL Shortener
+        </h2>
         <form onSubmit={handleGenerate}>
           <div className="mb-4">
-            <label htmlFor="url" className="block text-lg text-gray-700">Enter URL</label>
+            <label htmlFor="url" className="block text-sm md:text-base lg:text-lg text-gray-700">
+              Enter URL
+            </label>
             <input
               type="text"
               id="url"
-              className="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-2 md:p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter the URL to shorten"
               onChange={handleChange}
               required
             />
           </div>
 
-          <div className="mb-4 flex items-center space-x-4">
+          <div className="mb-4 flex flex-col md:flex-row md:items-center md:space-x-4">
             <div className="w-full">
-              <label htmlFor="shortUrl" className="block text-lg text-gray-700">Short URL Suffix</label>
+              <label htmlFor="shortUrl" className="block text-sm md:text-base lg:text-lg text-gray-700">
+                Short URL Suffix
+              </label>
               <input
                 type="text"
                 id="shortUrl"
-                className="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full p-2 md:p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Enter custom short URL suffix"
                 value={formdata.shortUrl}
                 onChange={handleChange}
@@ -169,10 +187,14 @@ function ShortUrl() {
             </div>
             <button
               type="button"
-              className="p-3 mt-8  bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-300"
+              className=" flex items-center justify-center mt-2 lg:mt-7  md:mt-6 p-2 md:p-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-300"
               onClick={handleAnalyze}
+              disabled={isanalayzing}
             >
-              Analyze
+              {isanalayzing ? ( <FaSpinner className="animate-spin text-white" />
+              ):(
+              "Analyze"
+            )}
             </button>
           </div>
 
@@ -197,14 +219,18 @@ function ShortUrl() {
 
           <button
             type="submit"
-            className="w-full py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-300"
+            className=" flex items-center justify-center w-full py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-300"
+            disabled={loading}
           >
-            Generate
+            {loading? ( <FaSpinner className="animate-spin text-white" /> 
+            ):(
+            "Generate"
+          )}
           </button>
 
           {generatedLink && (
             <div className="mt-6 text-center">
-              <p className="text-lg text-gray-800">Generated Link:</p>
+              <p className="text-sm md:text-base lg:text-lg text-gray-800">Generated Link:</p>
               <a
                 href={generatedLink}
                 target="_blank"
