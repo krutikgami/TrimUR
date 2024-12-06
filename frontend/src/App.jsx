@@ -9,11 +9,15 @@ import ProtectedRoute from './context/Protectedroute.jsx'
 import RedirectUrl from './components/RedirectUrl.jsx'
 import TrackUrl from './components/TrackUrl.jsx'
 import { BrowserRouter, Routes, Route } from "react-router-dom"
-
+import { SpeedInsights } from '@vercel/speed-insights/react';
+import { Analytics } from "@vercel/analytics/react"
 
 function App() {
 
   return (
+  <>
+    <SpeedInsights />
+    <Analytics />
 
     <BrowserRouter>
      
@@ -27,7 +31,7 @@ function App() {
         <Route path="/:shortUrl" element={<RedirectUrl />} />
       </Routes>
     </BrowserRouter>
- 
+    </>
 
   )
 }
